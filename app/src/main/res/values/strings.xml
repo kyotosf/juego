@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Spider-Love</string>
+    <string name="app_subtitle">Historia Canónica para Isabella</string>
+    <string name="sign_in_google">Iniciar sesión con Google</string>
+    <string name="sign_out">Cerrar sesión</string>
+    <string name="continue_adventure">Continuar Historia</string>
+    <string name="new_adventure">Nueva Partida</string>
+    <string name="save_slots_title">Ranuras de Guardado en la Nube</string>
+    <string name="memories_album_title">Álbum de Recuerdos de Isabella</string>
+</resources>

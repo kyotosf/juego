@@ -1,0 +1,6 @@
+{
+  "name": "Spider-Love",
+  "description": "Juego interactivo y romántico de Spider-Man con historia canónica dedicada a Isabella, adaptable a móvil y computadora con guardado en la nube.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

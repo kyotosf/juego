@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: deny everything by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidSaveSlot(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.slotNumber is int && data.slotNumber >= 1 && data.slotNumber <= 3 &&
+             data.slotName is string && data.slotName.size() >= 1 && data.slotName.size() <= 60 &&
+             data.currentChapter is int && data.currentChapter >= 1 && data.currentChapter <= 5 &&
+             data.currentSceneIndex is int && data.currentSceneIndex >= 0 && data.currentSceneIndex <= 20 &&
+             data.bondScore is int && data.bondScore >= 0 && data.bondScore <= 100 &&
+             data.couragePoints is int && data.couragePoints >= 0 && data.couragePoints <= 100 &&
+             data.tendernessPoints is int && data.tendernessPoints >= 0 && data.tendernessPoints <= 100 &&
+             data.witPoints is int && data.witPoints >= 0 && data.witPoints <= 100 &&
+             data.unlockedMemories is list && data.unlockedMemories.size() <= 20 &&
+             (data.unlockedMemories.size() == 0 || data.unlockedMemories[0] is string) &&
+             data.choiceHistory is list && data.choiceHistory.size() <= 30 &&
+             (data.choiceHistory.size() == 0 || data.choiceHistory[0] is string) &&
+             data.playTimeSeconds is int && data.playTimeSeconds >= 0 && data.playTimeSeconds <= 3600000 &&
+             data.finished is bool &&
+             data.lastChapterTitle is string && data.lastChapterTitle.size() <= 80 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /users/{userId}/saveSlots/{slotId} {
+      allow list: if isOwner(userId);
+      allow get: if isOwner(userId) && isValidId(slotId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(slotId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'slotNumber', 'slotName', 'currentChapter',
+                         'currentSceneIndex', 'bondScore', 'couragePoints',
+                         'tendernessPoints', 'witPoints', 'unlockedMemories',
+                         'choiceHistory', 'playTimeSeconds', 'finished',
+                         'lastChapterTitle', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'slotNumber', 'slotName', 'currentChapter',
+                         'currentSceneIndex', 'bondScore', 'couragePoints',
+                         'tendernessPoints', 'witPoints', 'unlockedMemories',
+                         'choiceHistory', 'playTimeSeconds', 'finished',
+                         'lastChapterTitle', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidSaveSlot(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(slotId) &&
+                       isValidSaveSlot(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().slotNumber == existing().slotNumber &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'slotName', 'currentChapter', 'currentSceneIndex',
+                         'bondScore', 'couragePoints', 'tendernessPoints',
+                         'witPoints', 'unlockedMemories', 'choiceHistory',
+                         'playTimeSeconds', 'finished', 'lastChapterTitle',
+                         'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(slotId);
+    }
+  }
+}

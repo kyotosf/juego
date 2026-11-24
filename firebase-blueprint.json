@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "SaveSlot": {
+      "title": "SaveSlot",
+      "description": "Cloud game save slot for Spider-Love canonical story progress, romantic bond metrics, and unlocked memories for Isabella.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated Firebase UID of the player."
+        },
+        "slotNumber": {
+          "type": "integer",
+          "description": "Save slot index from 1 to 3."
+        },
+        "slotName": {
+          "type": "string",
+          "description": "Display label for the save slot."
+        },
+        "currentChapter": {
+          "type": "integer",
+          "description": "Current canonical chapter number (1 to 5)."
+        },
+        "currentSceneIndex": {
+          "type": "integer",
+          "description": "Current interactive scene/beat index within the chapter."
+        },
+        "bondScore": {
+          "type": "integer",
+          "description": "Canonical romantic bond score between Peter and Isabella (0 to 100)."
+        },
+        "couragePoints": {
+          "type": "integer",
+          "description": "Heroic courage points earned."
+        },
+        "tendernessPoints": {
+          "type": "integer",
+          "description": "Romantic tenderness points earned."
+        },
+        "witPoints": {
+          "type": "integer",
+          "description": "Spider-Man humor and complicity points earned."
+        },
+        "unlockedMemories": {
+          "type": "array",
+          "description": "List of unlocked canonical memory IDs (max 20)."
+        },
+        "choiceHistory": {
+          "type": "array",
+          "description": "List of recorded canonical story choice IDs (max 30)."
+        },
+        "playTimeSeconds": {
+          "type": "integer",
+          "description": "Total elapsed play time in seconds."
+        },
+        "finished": {
+          "type": "boolean",
+          "description": "Whether the canonical story finale has been completed."
+        },
+        "lastChapterTitle": {
+          "type": "string",
+          "description": "Human-readable title of the last saved chapter."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when save slot was created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when save slot was last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "userId",
+        "slotNumber",
+        "slotName",
+        "currentChapter",
+        "currentSceneIndex",
+        "bondScore",
+        "couragePoints",
+        "tendernessPoints",
+        "witPoints",
+        "unlockedMemories",
+        "choiceHistory",
+        "playTimeSeconds",
+        "finished",
+        "lastChapterTitle",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/saveSlots/{slotId}": {
+      "schema": {
+        "$ref": "#/entities/SaveSlot"
+      },
+      "description": "Per-user cloud save slots for Spider-Love story progress and romantic keepsakes."
+    }
+  }
+}
